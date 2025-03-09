@@ -10,10 +10,6 @@ interface SampleQueryProps {
   sampleQueryForm: FormInstance;
 }
 
-const sampleQueryFormItemLayout = {
-  wrapperCol: { span: 16 },
-};
-
 const SampleQueryComponent: React.FC<SampleQueryProps> = ({
   onSampleQueryFinish,
   onSampleQueryReset,
@@ -52,14 +48,13 @@ const SampleQueryComponent: React.FC<SampleQueryProps> = ({
 
   return (
     <Form
-      {...sampleQueryFormItemLayout}
       form={sampleQueryForm}
       name="sampleQuery"
       onFinish={onSampleQueryFinish}
       layout="horizontal"
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-0 gap-x-2 pt-4 px-2 border-b"
     >
-      <Form.Item name="species" label={species}>
+      <Form.Item name="species" label={species} wrapperCol={{ span: 16 }}>
         <Select
           placeholder={select}
           allowClear
@@ -69,10 +64,10 @@ const SampleQueryComponent: React.FC<SampleQueryProps> = ({
           ]}
         ></Select>
       </Form.Item>
-      <Form.Item name="tissue" label={tissueOrgan}>
+      <Form.Item name="tissue" label={tissueOrgan} wrapperCol={{ span: 16 }}>
         <Input placeholder={input} allowClear />
       </Form.Item>
-      <Form.Item name="sample_id" label={sampleName}>
+      <Form.Item name="sample_id" label={sampleName} wrapperCol={{ span: 16 }}>
         <Input placeholder={input} allowClear />
       </Form.Item>
       <Form.Item className="flex justify-end">

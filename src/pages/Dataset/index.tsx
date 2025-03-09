@@ -3,7 +3,7 @@ import { PaginatedTable } from '@/components/base/paginated-table';
 import TransitionWrapper from '@/components/base/transition-wrapper';
 import { message } from '@/components/GlobalToast';
 import {
-  batchRemoveSample, downloadSample,
+  downloadSample,
   exportSamplePage,
   fetchSampleByPage,
   fetchSampleDetail,

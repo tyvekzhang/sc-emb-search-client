@@ -6,7 +6,7 @@ import {
   Card,
   Divider,
   Form,
-  Input,
+  Input, message,
   Modal,
   Select,
   Slider,
@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
 
 // Services
 import { uploadFile } from '@/service/file';
-import { createJob, getTissueList } from '@/service/sample';
+import { submitJob } from '@/service/search';
 
 // Utils
 import {
@@ -28,6 +28,10 @@ import {
   setJobTask,
   transformOptions,
 } from '@/utils';
+import { JobSubmit } from '@/types/job';
+import dayjs from 'dayjs';
+import { fetchAllSampleBySpecies, fetchSampleByPage, getSpecieList } from '@/service/sample';
+import { BaseQueryImpl } from '@/types';
 
 const { TabPane } = Tabs;
 
@@ -38,25 +42,28 @@ interface TaskProps {
 const Task: React.FC<TaskProps> = ({ setKey }) => {
   const [form] = Form.useForm();
   const intl = useIntl();
-  const [tissue, setTissue] = useState<string>();
+  const [species, setSpecies] = useState<string>();
   const [options, setOptions] = useState<optionType[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
-  const [fileId, setFileId] = useState('')
+  const [fileInfo, setFileInfo] = useState('')
+  const [fileName, setFileName] = useState('')
 
   // Localized strings
   const texts = {
     inputData: intl.formatMessage({ id: 'pages.search.input.data' }),
     require: intl.formatMessage({ id: 'pages.form.require' }),
-    referenceTissue: intl.formatMessage({
-      id: 'pages.search.reference.tissue',
+    referenceSpecies: intl.formatMessage({
+      id: 'pages.search.reference.species',
     }),
     selectReference: intl.formatMessage({ id: 'pages.search.select' }),
     uploadTip: intl.formatMessage({ id: 'pages.search.upload.tip' }),
-    h5adTip: intl.formatMessage({ id: 'pages.search.h5ad.tip' }),
+    h5adTip: intl.formatMessage({ id: 'pages.search.label.h5ad.tip' }),
     cellCount: intl.formatMessage({ id: 'pages.search.label.cellCount' }),
     cellIndex: intl.formatMessage({ id: 'pages.search.label.cellIndex' }),
     cellIndexTip: intl.formatMessage({ id: 'pages.search.label.cellIndexTip' }),
+    localFile: intl.formatMessage({ id: 'pages.search.label.localFile' }),
+    buildInFile: intl.formatMessage({ id: 'pages.search.label.Built-in-file' }),
     nickname: intl.formatMessage({ id: 'pages.search.label.nickname' }),
     nicknameTip: intl.formatMessage({ id: 'pages.search.label.nickname.tip' }),
     jobnameTip: intl.formatMessage({ id: 'pages.search.label.jobname.tip' }),
@@ -69,24 +76,21 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
   };
 
   useEffect(() => {
-    fetchTissueList();
     form.setFieldsValue({
       cellCount: 1000,
     });
   }, []);
 
-  const fetchTissueList = async () => {
-    try {
-      const res = await getTissueList();
-      const transformedOptions = transformOptions(res.data);
-      setOptions(transformedOptions);
-    } catch (error) {
-      console.error('Failed to fetch tissue list:', error);
-    }
+  const handleSelectReference = async (value: any, option: any) => {
+    setSpecies(option.value);
+    const resp = await fetchAllSampleBySpecies(option.value)
+    const transformedOptions = transformOptions(resp)
+    setOptions(transformedOptions);
   };
 
-  const handleSelectReference = (value: any, option: any) => {
-    setTissue(option.label);
+  const handleSelectSample = async (value: any, option: any) => {
+    setFileInfo(option.value)
+    setFileName(String(option.label) + ".h5ad")
   };
 
   const normalizeFileList = (e: any) => {
@@ -113,7 +117,7 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
     uploadFile(formData)
       .then((resp) => {
         if (resp) {
-          setFileId(resp)
+          setFileInfo(resp)
           onSuccess?.(file);
         } else {
           onError?.(new Error('Upload Error'));
@@ -122,6 +126,7 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
       .catch((error) => {
         onError?.(error);
       });
+    setFileName(file.name)
   };
 
   const handleSubmit = async () => {
@@ -132,33 +137,53 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
       setLoading(true);
 
       // Handle different data based on active tab
-      const data: any = {
-        tissue,
+      const data: JobSubmit = {
+        job_name: "",
+        job_type: 1,
+        file_info: "",
+        cell_index: "1",
+        result_cell_count: 10000,
       };
 
-      if (activeTab === '1' && values.fileList) {
-        data.inputUrl = values.fileList[0].response;
+      if (activeTab === '1' ) {
+        data.job_type = 1
+        if (fileInfo == null || fileInfo.length === 0) {
+          message.error('No file found.');
+          return
+        }
       } else if (activeTab === '2') {
-        // Handle data for "Select from List" tab
-        // Add the appropriate data field based on your requirements
+        data.job_type = 2
+        if (fileInfo == null || fileInfo.length === 0) {
+          message.error('Please select a sample.');
+          return
+        }
       }
+      data.file_info = String(fileInfo)
 
       if (values.jobName) {
-        data.jobName = values.jobName;
+        data.job_name = values.jobName;
       }
 
       if (values.cellCount) {
-        data.cellCount = values.cellCount;
+        data.result_cell_count = values.cellCount;
       }
 
-      const res = await createJob(data);
+      if (values.cellIndex) {
+        data.result_cell_count = values.cellIndex;
+      }
+
+      const res = await submitJob(data);
 
       if (res) {
-        const { jobId, gmtCreate, cellCount } = res.data;
+        const jobId = res;
+        const cellCount = res;
+        const gmtCreate = dayjs().format('YYYY-MM-DD HH:mm:ss');
+        setFileName("")
 
         setJobTask({
           jobId,
-          jobName: values.jobName || tissue,
+          jobName: values.jobName || fileName,
+          status: 1,
           cellCount,
           gmtCreate,
         });
@@ -210,12 +235,12 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
           <Tabs
             defaultActiveKey="1"
             onChange={handleTabChange}
-            className="w-2/3 -mt-4"
+            className="w-2/3 -mt-6"
           >
             <TabPane
               tab={
                 <span>
-                  <InboxOutlined /> Local File
+                  <InboxOutlined /> {texts.localFile}
                 </span>
               }
               key="1"
@@ -246,14 +271,14 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
             <TabPane
               tab={
                 <span>
-                  <CloudOutlined /> Remote File
+                  <CloudOutlined /> {texts.buildInFile}
                 </span>
               }
               key="2"
             >
               <Form.Item
-                label={texts.referenceTissue}
-                name="tissue"
+                label={texts.referenceSpecies}
+                name="specie"
                 rules={[{ required: true, message: texts.require }]}
               >
                 <Select
@@ -261,7 +286,10 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
                   style={{ width: '100%' }}
                   placeholder={texts.selectReference}
                   onChange={handleSelectReference}
-                  options={options}
+                  options={[
+                    { value: '1', label: 'Homo sapiens' },
+                    { value: '2', label: 'Mouse' },
+                  ]}
                   filterOption={filterOperate}
                 />
               </Form.Item>
@@ -275,7 +303,9 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
                 <Select
                   showSearch
                   style={{ width: '100%' }}
-                  placeholder="Select a file"
+                  placeholder="Please select"
+                  onChange={handleSelectSample}
+                  options={options}
                   filterOption={filterOperate}
                 />
               </Form.Item>

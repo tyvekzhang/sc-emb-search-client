@@ -1,9 +1,9 @@
 import { prefix } from '@/config';
 import { useIntl } from '@umijs/max';
 import { Modal, Table } from 'antd';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import styles from './index.less';
-import useAnnoTable from './useAnnoTable';
+import useCellEmbResultTable from './useCellEmbResultTable';
 
 export type resultDataType = {
   title?: string;
@@ -19,12 +19,12 @@ type resultPropsType = {
 const ResultTable: React.FC<resultPropsType> = (props) => {
   const { tableData, jobId, visible, setVisible, title } = props;
   const intl = useIntl();
-  const [columns] = useAnnoTable();
+  const [columns] = useCellEmbResultTable();
   let _tableData = tableData;
   const titleTxt = jobId
     ? title
-      ? title + `(jobId: ${jobId})`
-      : 'jobId: ' + jobId
+      ? title + `(JobId: ${jobId})`
+      : 'JobId: ' + jobId
     : title;
 
   return (
@@ -33,8 +33,8 @@ const ResultTable: React.FC<resultPropsType> = (props) => {
       title={
         tableData && tableData.length ? (
           <div className={styles.header}>
-            <div>{titleTxt}</div>
-            <a href={`${prefix}/api/job/exportResult?jobId=${jobId}`} download>
+            <div className="my-3">{titleTxt}</div>
+            <a className="text-blue-500 font-medium" href={`${prefix}/api/job/exportResult?jobId=${jobId}`} download>
               {intl.formatMessage({ id: 'component.result.download' })}
             </a>
           </div>
@@ -46,9 +46,6 @@ const ResultTable: React.FC<resultPropsType> = (props) => {
       onCancel={() => setVisible(false)}
       footer={null}
     >
-      <div style={{ textAlign: 'center' }}>
-        <img src="./cell_type.png" alt="Cell type" style={{ height: '45vh' }} />
-      </div>
       <Table
         size="small"
         className="cus-table"

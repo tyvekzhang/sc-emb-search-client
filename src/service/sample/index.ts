@@ -2,11 +2,10 @@ import { request } from '@umijs/max';
 import { BaseQueryImpl, PageQuery, PageResult } from '@/types';
 import { SampleDetail, SamplePage, SampleQuery } from '@/types/sample';
 import dayjs from 'dayjs';
+import { downloadBlob } from '@/service/util';
 
-export function createJob() {}
 
-
-export function getTissueList() {
+export function getSpecieList() {
 }
 
 
@@ -42,6 +41,20 @@ export async function fetchSampleByPage(
     ...sampleQuery,
   };
   return request<PageResult<SamplePage>>('/v1/sample/page', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export async function fetchAllSampleBySpecies(
+  species: string
+) {
+  const params = {
+    species: species
+  }
+  return request<PageResult<SamplePage>>('/v1/sample/list', {
     method: 'GET',
     params: {
       ...params,
@@ -92,32 +105,5 @@ export async function exportSamplePage(ids: string[]) {
   }).then((resp) => {
     const timestamp = dayjs().format('YYYYMMDDHHmmss');
     downloadBlob(resp, `${timestamp}_dataset_data_export.xlsx`);
-  });
-}
-
-export const downloadBlob = (blob: Blob, filename: string) => {
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
-};
-/**
- * 批量移除Sample
- *
- * @param ids 要移除的Sample的ID数组
- */
-export async function batchRemoveSample(ids: string[]) {
-  const params = {
-    ids: ids,
-  };
-  return request<void>('/sample/batch-remove', {
-    method: 'DELETE',
-    params: {
-      ...params,
-    },
   });
 }

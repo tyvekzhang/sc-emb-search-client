@@ -5,19 +5,18 @@ export type optionType = {
 
 export const filterOperate = (input: string, option?: optionType) => {
   return (
-    option?.label.toLocaleLowerCase().includes(input.toLocaleLowerCase()) ||
-    false
+    option !== undefined &&
+    option.label.toLowerCase().includes(input.toLowerCase())
   );
 };
 
-export function transformOptions(data: AnnoType.TissueType[]) {
+export function transformOptions(data: any) {
   return data.map((item) => {
     return Object.assign(
       {},
       {
-        label: item.name,
+        label: item.sample_id,
         value: item.id,
-        disabled: item.disabled,
       },
     );
   });
@@ -27,10 +26,11 @@ export type taskType = {
   jobId: string;
   jobName: string;
   cellCount: number;
+  status: number;
   gmtCreate: string;
 };
 
-const TASK_KEY = 'ANNOTATION_KEY';
+export const TASK_KEY = 'CELL_EMB_SEARCH_KEY';
 export function getJobTask(): taskType[] | null {
   const cache = localStorage.getItem(TASK_KEY);
   if (cache) {

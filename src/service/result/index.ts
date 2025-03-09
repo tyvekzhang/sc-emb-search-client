@@ -1,8 +1,8 @@
 import { request } from '@umijs/max';
 
 export async function queryJobResult(jobId: string) {
-  return request<ResultTaskType.JobResType>('/api/v1/job/getRequest', {
+  return request<ResultTaskType.JobResType>('/v1/job/getResult', {
     method: 'GET',
-    params: { jobId },
+    params: { job_id: jobId },
   });
 }
