@@ -9,7 +9,7 @@ const Run: React.FC = () => {
         width="100%"
         controls
         autoPlay
-        src="https://raw.githubusercontent.com/tyvekzhang/scdifformer/main/scdifformer_run.mp4"
+        src="scembsearch_operation.mp4"
       />
     </GridContent>
   );

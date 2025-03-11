@@ -45,8 +45,7 @@ const Result: React.FC<{ aKey: string }> = (props) => {
 
           // 遍历筛选出的任务，调用 getDetail 接口
           for (const task of filteredTasks) {
-            const detail = await fetchJobDetail(task.jobId);
-            debugger
+            const detail = await fetchJobDetail(String(task.jobId));
             if (detail && detail.status !== task.status) {
               // 更新任务状态
               task.status = detail.status;
@@ -57,7 +56,7 @@ const Result: React.FC<{ aKey: string }> = (props) => {
           localStorage.setItem(TASK_KEY, JSON.stringify(_tasks));
           setTasks([..._tasks]);
         }
-      }, 3000);
+      }, 5000);
 
       // 清除定时器
       return () => clearInterval(interval);
@@ -77,19 +76,19 @@ const Result: React.FC<{ aKey: string }> = (props) => {
     e.preventDefault();
     const { jobId } = record;
 
-    const hide = message.loading('Loading...', 200);
-    const res = await queryJobResult(jobId).catch(console.error);
+    const hide = message.loading('Loading...', 2);
+    const res = await queryJobResult(String(jobId)).catch(console.error);
     if (res) {
       if (statusType.waiting === res.status) {
         Modal.warning({
           title: intl.formatMessage({ id: 'pages.form.job.wait' }),
           content: (
-            <div>
-              {intl.formatMessage(
-                { id: 'pages.form.job.wait.tip' },
-                { id: <b>{jobId}</b> },
-              )}
-            </div>
+              <div>
+                {intl.formatMessage(
+                    { id: 'pages.form.job.wait.tip' },
+                    { id: <b>{jobId}</b> },
+                )}
+              </div>
           ),
           maskClosable: true,
         });
@@ -97,12 +96,12 @@ const Result: React.FC<{ aKey: string }> = (props) => {
         Modal.warning({
           title: intl.formatMessage({ id: 'pages.form.job.exec' }),
           content: (
-            <div>
-              {intl.formatMessage(
-                { id: 'pages.form.job.exec.tip' },
-                { id: <b>{jobId}</b> },
-              )}
-            </div>
+              <div>
+                {intl.formatMessage(
+                    { id: 'pages.form.job.exec.tip' },
+                    { id: <b>{jobId}</b> },
+                )}
+              </div>
           ),
           maskClosable: true,
         });
@@ -112,7 +111,7 @@ const Result: React.FC<{ aKey: string }> = (props) => {
           message.error('Run result error');
         } else {
           setResultData({
-            jobId: jobId,
+            jobId: String(jobId),
             tableData: res.records || [],
           });
           setVisible(true);
@@ -144,64 +143,64 @@ const Result: React.FC<{ aKey: string }> = (props) => {
       dataIndex: 'status',
       render: (text, record) => {
         if (text === 1) {
-          return <Tag bordered={false} color="yellow">{intl.formatMessage({ id: 'pages.result.waiting' })}</Tag>;
+          return <Tag className={"p-1"} bordered={false} color="yellow">{intl.formatMessage({ id: 'pages.result.waiting' })}</Tag>;
         } else if (text === 2) {
-          return <Tag bordered={false} color="processing">{intl.formatMessage({ id: 'pages.result.executing' })}</Tag>;
+          return <Tag className={"p-1"} bordered={false} color="processing">{intl.formatMessage({ id: 'pages.result.executing' })}</Tag>;
         } else if (text === 3) {
-          return <Tag bordered={false} color="success">{intl.formatMessage({ id: 'pages.result.completed' })}</Tag>;
+          return <Tag className={"p-1"} bordered={false} color="success">{intl.formatMessage({ id: 'pages.result.completed' })}</Tag>;
         } else {
-          return <Tag bordered={false} color="error">{intl.formatMessage({ id: 'pages.result.completed' })}</Tag>;
-
+          return <Tag className={"p-1"} bordered={false} color="error">{intl.formatMessage({ id: 'pages.result.error' })}</Tag>;
         }
       },
     },
     {
       title: intl.formatMessage({ id: 'pages.result.operate' }),
       render: (_, record, idx) => (
-        <Space >
-          <button
-            className="btn-operation"
-            onClick={(e) => handleQueryResult(e, record)}
-          >
-            <EyeOutlined className="w-3 h-3" />
-            <span className="ml-1">
+          <Space >
+            <button
+                className="btn-operation"
+                onClick={(e) => handleQueryResult(e, record)}
+                disabled={record.status!== statusType.completed} // 禁用状态控制
+            >
+              <EyeOutlined className="w-3 h-3" />
+              <span className="ml-1">
               {intl.formatMessage({ id: 'pages.result.btn' })}
             </span>
-          </button>
-          <Popconfirm
-            title={intl.formatMessage({ id: 'pages.result.del.tip' })}
-            onConfirm={() => handleDelete(idx)}
-          >
-            <button className="block btn-remove">
-              <DeleteOutlined className="w-3 h-3" />
-              <span className="ml-1">
+            </button>
+            <Popconfirm
+                title={intl.formatMessage({ id: 'pages.result.del.tip' })}
+                onConfirm={() => handleDelete(idx)}
+            >
+              <button className="block btn-remove">
+                <DeleteOutlined className="w-3 h-3" />
+                <span className="ml-1">
                 {intl.formatMessage({ id: 'pages.result.del' })}
               </span>
-            </button>
-          </Popconfirm>
-        </Space>
+              </button>
+            </Popconfirm>
+          </Space>
       ),
     },
   ];
 
   return (
-    <GridContent>
-      <Card bordered={false}>
-        <Table
-          size="middle"
-          columns={columns}
-          scroll={{ y: 'calc(100vh - 296px)' }}
-          rowKey="jobId"
-          dataSource={tasks}
-          pagination={false}
-        />
-        <ResultTable
-          visible={visible}
-          setVisible={setVisible}
-          {...resultData}
-        />
-      </Card>
-    </GridContent>
+      <GridContent>
+        <Card bordered={false}>
+          <Table
+              size="middle"
+              columns={columns}
+              scroll={{ y: 'calc(100vh - 296px)' }}
+              rowKey="jobId"
+              dataSource={tasks}
+              pagination={false}
+          />
+          <ResultTable
+              visible={visible}
+              setVisible={setVisible}
+              {...resultData}
+          />
+        </Card>
+      </GridContent>
   );
 };
 

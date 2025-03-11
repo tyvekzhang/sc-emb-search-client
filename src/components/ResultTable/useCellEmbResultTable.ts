@@ -40,7 +40,7 @@ export default function useCellEmbResultTable() {
     {
       title: intl.formatMessage({ id: 'component.result.cell_line' }),
       dataIndex: 'cell_line',
-      width: "5%",
+      width: "8%",
       render: (text: boolean, record: CellEmbResult) => {
         if (text) {
           return intl.formatMessage({ id: 'component.result.yes' })

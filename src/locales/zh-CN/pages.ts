@@ -24,6 +24,8 @@ export default {
   'pages.result.waiting': '等待中',
   'pages.result.executing': '执行中',
   'pages.result.completed': '执行完成',
+  'pages.result.error': '执行出错',
+  'pages.search.builtIn': '从内置文件选择',
   'pages.result.operate': '操作',
   'pages.result.btn': '查看结果',
   'pages.result.del': '删除',
@@ -52,6 +54,7 @@ export default {
   "pages.dataset.reset": "重置",
   "pages.dataset.settingColumn": "设置列",
   "pages.dataset.sampleDetail": "样本详情",
-  "pages.dataset.input": "输入",
-  "pages.home.introduction": "跨物种单细胞 Embedding 检索库，提供基于 Embedding 的快速相似性检索功能，支持跨物种细胞的高效比对。内置丰富的 Metadata 数据，用户可便捷下载，助力单细胞研究。"
+  "pages.dataset.input": "请输入",
+  "pages.home.introduction": "跨物种单细胞 Embedding 检索库，提供基于 Embedding 的快速相似性检索功能，支持跨物种细胞的高效比对。内置丰富的 Metadata 数据，可便捷下载，助力单细胞研究。",
+  "pages.home.shortcut": "快捷入口",
 };

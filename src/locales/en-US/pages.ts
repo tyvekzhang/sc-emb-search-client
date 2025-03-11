@@ -24,6 +24,8 @@ export default {
   'pages.result.waiting': 'waiting',
   'pages.result.executing': 'executing',
   'pages.result.completed': 'completed',
+  'pages.search.builtIn': 'Select from built-in file',
+  'pages.result.error': 'error',
   'pages.form.job.wait': 'Waiting',
   'pages.form.job.wait.tip': 'Job wait to exec.',
   'pages.form.job.exec': 'Executing',
@@ -60,4 +62,5 @@ export default {
   "pages.dataset.sampleDetail": "Sample Details",
   "pages.dataset.input": "Please input",
   "pages.home.introduction": "Cross-species Single-cell Embedding Search Library enables fast similarity search based on Embedding, supporting efficient cross-species cell comparison. Built-in comprehensive Metadata is available for easy download, empowering single-cell research.",
+  "pages.home.shortcut": "Quick entrance",
 };

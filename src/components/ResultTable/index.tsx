@@ -34,7 +34,7 @@ const ResultTable: React.FC<resultPropsType> = (props) => {
         tableData && tableData.length ? (
           <div className={styles.header}>
             <div className="my-3">{titleTxt}</div>
-            <a className="text-blue-500 font-medium" href={`${prefix}/api/job/exportResult?jobId=${jobId}`} download>
+            <a className="text-blue-500 font-medium" href={`${prefix}/v1/job/export_result?job_id=${jobId}`} download>
               {intl.formatMessage({ id: 'component.result.download' })}
             </a>
           </div>
@@ -51,7 +51,7 @@ const ResultTable: React.FC<resultPropsType> = (props) => {
         className="cus-table"
         columns={columns}
         rowKey="id"
-        dataSource={_tableData}
+        dataSource={_tableData as any}
         pagination={false}
         scroll={{ x: true, y: 'calc(100vh - 280px)' }}
       />

@@ -11,7 +11,7 @@ export const filterOperate = (input: string, option?: optionType) => {
 };
 
 export function transformOptions(data: any) {
-  return data.map((item) => {
+  return data.map((item:any) => {
     return Object.assign(
       {},
       {
@@ -23,7 +23,7 @@ export function transformOptions(data: any) {
 }
 
 export type taskType = {
-  jobId: string;
+  jobId: number;
   jobName: string;
   cellCount: number;
   status: number;

@@ -57,6 +57,7 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
       id: 'pages.search.reference.species',
     }),
     selectReference: intl.formatMessage({ id: 'pages.search.select' }),
+    selectFromBuiltIn: intl.formatMessage({ id: 'pages.search.builtIn' }),
     uploadTip: intl.formatMessage({ id: 'pages.search.upload.tip' }),
     h5adTip: intl.formatMessage({ id: 'pages.search.label.h5ad.tip' }),
     cellCount: intl.formatMessage({ id: 'pages.search.label.cellCount' }),
@@ -169,7 +170,7 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
       }
 
       if (values.cellIndex) {
-        data.result_cell_count = values.cellIndex;
+        data.cell_index = values.cellIndex;
       }
 
       const res = await submitJob(data);
@@ -290,11 +291,11 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
                     { value: '1', label: 'Homo sapiens' },
                     { value: '2', label: 'Mouse' },
                   ]}
-                  filterOption={filterOperate}
+                  filterOption={filterOperate as any}
                 />
               </Form.Item>
               <Form.Item
-                label="Select from Available Files"
+                label={texts.selectFromBuiltIn}
                 name="selectedFile"
                 rules={[
                   { required: activeTab === '2', message: texts.require },

@@ -1,15 +1,15 @@
 # ScEmbSearch-client
 
-ScDifformer 的客户端程序。
+ScEmbSearch 的客户端程序。
 
 ## 1. 环境说明
 
 ```shell
 node -v
-v18.12.0
+v20.15.0
 
 npm -v
-8.19.2
+10.7.0
 ```
 
 使用 `pnpm --version` 检查是否安装包管理器。报错则使用如下方法安装：
@@ -35,3 +35,8 @@ npm -v
 ```shell
 unzip dist.zip
 ```
+
+## 5. 常见问题及处理方案
+
+1. 下载依赖速度慢
+   - 设置下载源为国内镜像源
