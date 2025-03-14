@@ -59,29 +59,26 @@ const HomePage: React.FC = () => {
                   {intl.formatMessage({ id: 'pages.home.shortcut' })}
                 </h2>
                 <Space direction="horizontal" size="large" className="mt-2">
-                  <Space className={"border-none shadow-none hover:scale-105 w-24 h-24 bg-gradient-to-br from-[#6EE7B7] to-[#3B82F6] p-4 hover:text-gray-500 hover:shadow rounded-md"} >
+                  <Space  onClick={() => navigate("/dataset")} className={"cursor-pointer border-none shadow-none hover:scale-105 w-24 h-24 bg-gradient-to-br from-[#6EE7B7] to-[#3B82F6] p-4 hover:text-gray-500 hover:shadow rounded-md transition-all duration-300"} >
                     {<DatabaseOutlined />}
                     <button
                         key={"dataset"}
-                        onClick={() => navigate("/dataset")}
                     >
                       {intl.formatMessage({ id: 'menu.dataset' })}
                     </button>
                   </Space>
-                  <Space className={"border-none shadow-none hover:scale-105 w-24 h-24 bg-gradient-to-br from-blue-300 to-purple-400 p-4 hover:text-gray-500 hover:shadow rounded-md transition-all duration-300"} >
+                  <Space onClick={() => navigate("/search")} className={"cursor-pointer border-none shadow-none hover:scale-105 w-24 h-24 bg-gradient-to-br from-blue-300 to-purple-400 p-4 hover:text-gray-500 hover:shadow rounded-md transition-all duration-300"} >
                     {<SearchOutlined />}
                     <button
                         key={"search"}
-                        onClick={() => navigate("/search")}
                     >
                       {intl.formatMessage({ id: 'menu.search' })}
                     </button>
                   </Space>
-                  <Space className={"border-none shadow-none hover:scale-105 w-24 h-24 bg-gradient-to-br from-indigo-200 to-[#4673F4] p-4 hover:text-gray-500 hover:shadow rounded-md transition-all duration-300"} >
-                    {<SearchOutlined />}
+                  <Space onClick={() => navigate("/help")} className={"cursor-pointer border-none shadow-none hover:scale-105 w-24 h-24 bg-gradient-to-br from-indigo-200 to-[#4673F4] p-4 hover:text-gray-500 hover:shadow rounded-md transition-all duration-300"} >
+                    {<QuestionCircleOutlined />}
                     <button
                         key={"help"}
-                        onClick={() => navigate("/help")}
                     >
                       {intl.formatMessage({ id: 'menu.help' })}
                     </button>
@@ -91,8 +88,8 @@ const HomePage: React.FC = () => {
             </div>
             <div>
               <img
-                  className="mx-auto rounded-3xl shadow-3xl h-96 w-96 p-12 cursor-pointer hover:scale-105 transition-all duration-200"
-                  src="scembsearch.png"
+                  className="mx-auto rounded-xl h-96 w-96 p-12 cursor-pointer hover:scale-105 transition-all duration-300"
+                  src="/scembsearch.png"
                   alt="scembsearch"
               />
             </div>

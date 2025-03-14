@@ -1,7 +1,7 @@
 import ActionButtonComponent from '@/components/base/action-button';
 import { PaginatedTable } from '@/components/base/paginated-table';
 import TransitionWrapper from '@/components/base/transition-wrapper';
-import { message } from '@/components/GlobalToast';
+import { message } from 'antd';
 import {
   downloadSample,
   exportSamplePage,
@@ -24,6 +24,7 @@ const Sample: React.FC = () => {
   const species = intl.formatMessage({ id: 'pages.dataset.species' });
   const no = intl.formatMessage({ id: 'pages.dataset.no' });
   const sampleName = intl.formatMessage({ id: 'pages.dataset.sampleName' });
+  const downloading = intl.formatMessage({ id: 'pages.dataset.downloading' });
   const projectName = intl.formatMessage({ id: 'pages.dataset.projectName' });
   const tissueOrgan = intl.formatMessage({ id: 'pages.dataset.tissueOrgan' });
   const cellCount = intl.formatMessage({ id: 'pages.dataset.cellCount' });
@@ -96,6 +97,7 @@ const Sample: React.FC = () => {
   };
 
   const handleSampleDownload = async (record: SamplePage) => {
+    message.info(downloading)
     await downloadSample(record);
   };
 
@@ -271,7 +273,6 @@ const Sample: React.FC = () => {
     }
     try {
       setIsBatchRemoveLoading(true);
-      await batchRemoveSample(selectedRows.map((row) => row.id));
       await onSampleQueryFinish();
       resetSelectedRows();
     } finally {

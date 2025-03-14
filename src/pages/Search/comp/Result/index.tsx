@@ -8,6 +8,7 @@ import { Card, message, Modal, Popconfirm, Space, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import React, { useEffect, useState } from 'react';
 import { fetchJobDetail } from '@/service/job';
+import {prefix} from "@/config";
 
 enum statusType {
   waiting = 1,
@@ -34,7 +35,7 @@ const Result: React.FC<{ aKey: string }> = (props) => {
     }
   }, [props.aKey]);
 
-  // 每 3 秒查询一次任务列表
+  // 每 2 秒查询一次任务列表
   useEffect(() => {
     if (props.aKey === '2') {
       const interval = setInterval(async () => {
@@ -56,7 +57,7 @@ const Result: React.FC<{ aKey: string }> = (props) => {
           localStorage.setItem(TASK_KEY, JSON.stringify(_tasks));
           setTasks([..._tasks]);
         }
-      }, 5000);
+      }, 2000);
 
       // 清除定时器
       return () => clearInterval(interval);
@@ -150,6 +151,17 @@ const Result: React.FC<{ aKey: string }> = (props) => {
           return <Tag className={"p-1"} bordered={false} color="success">{intl.formatMessage({ id: 'pages.result.completed' })}</Tag>;
         } else {
           return <Tag className={"p-1"} bordered={false} color="error">{intl.formatMessage({ id: 'pages.result.error' })}</Tag>;
+        }
+      },
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.result.cellEmbedding' }),
+      dataIndex: 'cellEmbedding',
+      render: (text, record) => {
+        if (record.status === 3) {
+          return <a className={"text-blue-500"} href={`${prefix}/v1/job/export_result?job_id=${record.jobId}&emb=true`}>{intl.formatMessage({ id: 'component.result.download' })}</a>;
+        } else {
+          return <a className={"text-blue-500 cursor-not-allowed"}>{intl.formatMessage({ id: 'component.result.generating' })}</a>;
         }
       },
     },

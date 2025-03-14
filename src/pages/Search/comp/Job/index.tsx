@@ -6,16 +6,18 @@ import {
   Card,
   Divider,
   Form,
-  Input, message,
+  Input,
+  message,
   Modal,
+  Radio,
   Select,
   Slider,
   Tabs,
   Upload,
 } from 'antd';
+import type { CheckboxGroupProps } from 'antd/es/checkbox';
 import type { RcFile, UploadRequestOption } from 'rc-upload/lib/interface';
-import type React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Services
 import { uploadFile } from '@/service/file';
@@ -30,8 +32,7 @@ import {
 } from '@/utils';
 import { JobSubmit } from '@/types/job';
 import dayjs from 'dayjs';
-import { fetchAllSampleBySpecies, fetchSampleByPage, getSpecieList } from '@/service/sample';
-import { BaseQueryImpl } from '@/types';
+import { fetchAllSampleBySpecies } from '@/service/sample';
 
 const { TabPane } = Tabs;
 
@@ -56,13 +57,18 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
     referenceSpecies: intl.formatMessage({
       id: 'pages.search.reference.species',
     }),
+    model: intl.formatMessage({
+      id: 'pages.search.reference.model',
+    }),
     selectReference: intl.formatMessage({ id: 'pages.search.select' }),
     selectFromBuiltIn: intl.formatMessage({ id: 'pages.search.builtIn' }),
     uploadTip: intl.formatMessage({ id: 'pages.search.upload.tip' }),
     h5adTip: intl.formatMessage({ id: 'pages.search.label.h5ad.tip' }),
     cellCount: intl.formatMessage({ id: 'pages.search.label.cellCount' }),
     cellIndex: intl.formatMessage({ id: 'pages.search.label.cellIndex' }),
+    barcodeIndex: intl.formatMessage({ id: 'pages.search.label.barcodeIndex' }),
     cellIndexTip: intl.formatMessage({ id: 'pages.search.label.cellIndexTip' }),
+    barcodeTip: intl.formatMessage({ id: 'pages.search.label.barcodeTip' }),
     localFile: intl.formatMessage({ id: 'pages.search.label.localFile' }),
     buildInFile: intl.formatMessage({ id: 'pages.search.label.Built-in-file' }),
     nickname: intl.formatMessage({ id: 'pages.search.label.nickname' }),
@@ -82,12 +88,18 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
     });
   }, []);
 
-  const handleSelectReference = async (value: any, option: any) => {
+  const handleSelectReference = async (_value: any, option: any) => {
     setSpecies(option.value);
-    const resp = await fetchAllSampleBySpecies(option.value)
-    const transformedOptions = transformOptions(resp)
-    setOptions(transformedOptions);
+    if (activeTab === '2') {
+      const resp = await fetchAllSampleBySpecies(option.value);
+      const transformedOptions = transformOptions(resp);
+      setOptions(transformedOptions);
+    }
   };
+
+  useEffect(() => {
+    handleSelectReference("", { value: species })
+  }, [activeTab]);
 
   const handleSelectSample = async (value: any, option: any) => {
     setFileInfo(option.value)
@@ -139,10 +151,11 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
 
       // Handle different data based on active tab
       const data: JobSubmit = {
+        model: 1,
         job_name: "",
         job_type: 1,
         file_info: "",
-        cell_index: "1",
+        cell_index: undefined,
         result_cell_count: 10000,
       };
 
@@ -173,6 +186,11 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
         data.cell_index = values.cellIndex;
       }
 
+      if (values.model) {
+        data.model = values.model;
+      }
+
+
       const res = await submitJob(data);
 
       if (res) {
@@ -184,7 +202,7 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
         setJobTask({
           jobId,
           jobName: values.jobName || fileName,
-          status: 1,
+          status: 2,
           cellCount,
           gmtCreate,
         });
@@ -229,14 +247,64 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
     form.setFieldsValue({ cellCount: value });
   };
 
+  const indexOptions: CheckboxGroupProps<string>['options'] = [
+    { label: texts.cellIndex , value: '1' },
+    { label: texts.barcodeIndex, value: '2' },
+  ];
+
+  const modelOptions: CheckboxGroupProps<string>['options'] = [
+    { label: "Scimilarity" , value: '1' },
+    { label: "Geneformer", value: '2' },
+  ];
+
+  const [indexType, setIndexType] = useState('1');
+  const [modelName, setModelName] = useState('1');
+
+  useEffect(() => {
+    form.setFieldsValue({
+      model: modelName,
+    });
+  }, []);
   return (
     <GridContent>
       <Card bordered={false}>
         <Form layout="vertical" form={form}>
+          <Form.Item
+              label={texts.model}
+              name="model"
+              rules={[{ required: true, message: texts.require }]}
+              className="-mt-4"
+          >
+            <Radio.Group
+                options={modelOptions}
+                defaultValue={modelName}
+                onChange={(e) => setModelName(e.target.value)}
+                optionType="button"
+                buttonStyle="solid"
+            />
+          </Form.Item>
+          <Form.Item
+              label={texts.referenceSpecies}
+              name="specie"
+              rules={[{ required: true, message: texts.require }]}
+              className={"w-2/3"}
+          >
+            <Select
+                showSearch
+                style={{ width: '100%' }}
+                placeholder={texts.selectReference}
+                onChange={handleSelectReference}
+                options={[
+                  { value: '1', label: 'Homo sapiens' },
+                  { value: '2', label: 'Mouse', disabled: true },
+                ]}
+                filterOption={filterOperate as any}
+            />
+          </Form.Item>
           <Tabs
             defaultActiveKey="1"
             onChange={handleTabChange}
-            className="w-2/3 -mt-6"
+            className="w-2/3 -mt-2"
           >
             <TabPane
               tab={
@@ -278,23 +346,6 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
               key="2"
             >
               <Form.Item
-                label={texts.referenceSpecies}
-                name="specie"
-                rules={[{ required: true, message: texts.require }]}
-              >
-                <Select
-                  showSearch
-                  style={{ width: '100%' }}
-                  placeholder={texts.selectReference}
-                  onChange={handleSelectReference}
-                  options={[
-                    { value: '1', label: 'Homo sapiens' },
-                    { value: '2', label: 'Mouse' },
-                  ]}
-                  filterOption={filterOperate as any}
-                />
-              </Form.Item>
-              <Form.Item
                 label={texts.selectFromBuiltIn}
                 name="selectedFile"
                 rules={[
@@ -326,12 +377,20 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
               onChange={handleSliderChange}
             />
           </Form.Item>
+          <Radio.Group
+              options={indexOptions}
+              defaultValue={indexType}
+              onChange={(e) => setIndexType(e.target.value)}
+              optionType="button"
+              buttonStyle="solid"
+              className="mb-2"
+          />
           <Form.Item
             wrapperCol={{ span: 16 }}
-            label={texts.cellIndex}
+            // label={indexType === '1' ? texts.cellIndex : texts.barcodeTip}
             name="cellIndex"
           >
-            <Input placeholder={texts.cellIndexTip} />
+            { indexType === '1' ? <Input placeholder={texts.cellIndexTip} /> : <Input placeholder={texts.barcodeTip} />}
           </Form.Item>
           <Divider />
           <Form.Item

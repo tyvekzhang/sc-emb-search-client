@@ -15,7 +15,7 @@ export function transformOptions(data: any) {
     return Object.assign(
       {},
       {
-        label: item.sample_id,
+        label: `[${item.tissue}] ${item.sample_id}`,
         value: item.id,
       },
     );

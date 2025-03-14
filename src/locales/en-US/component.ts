@@ -1,6 +1,7 @@
 export default {
   'component.result.download': 'Download',
-  'component.result.rank': 'Rank',
+  'component.result.generating': 'Generating',
+  'component.result.rank': 'No',
   'component.result.cellcount': 'Cell Count',
   'component.result.study': 'Study',
   'component.result.sample': 'Sample',

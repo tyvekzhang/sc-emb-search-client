@@ -51,6 +51,8 @@ export interface JobCreate {
 
 export interface JobSubmit {
     /** 任务名称 */
+    model: number;
+    /** 任务名称 */
     job_name?: string;
 
     /** 任务类型 */
