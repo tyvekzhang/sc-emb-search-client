@@ -60,7 +60,7 @@ const SampleQueryComponent: React.FC<SampleQueryProps> = ({
           allowClear
           options={[
             { value: '1', label: 'Homo sapiens' },
-            { value: '2', label: 'Mouse', disabled: true },
+            { value: '2', label: 'Mouse' },
           ]}
         ></Select>
       </Form.Item>

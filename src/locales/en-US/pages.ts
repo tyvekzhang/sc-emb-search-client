@@ -1,9 +1,9 @@
 export default {
   'pages.search.tab.task': 'Sc Emb Search',
   'pages.search.tab.result': 'Job List',
-  'pages.search.input.data': 'Single cell sequencing data:',
-  'pages.search.reference.species': 'Species:',
-  'pages.search.reference.model': 'Model:',
+  'pages.search.input.data': 'Single cell sequencing data',
+  'pages.search.reference.species': 'Species',
+  'pages.search.reference.model': 'Model',
   'pages.search.select': 'Please select',
   'pages.search.upload.tip': 'Click or drag here to upload',
   'pages.search.label.h5ad.tip': 'Only h5ad files supported now',
@@ -13,8 +13,8 @@ export default {
   'pages.search.label.barcodeTip': 'Please input cell barcode(Optional)',
   'pages.search.label.cellIndex': 'Cell Index',
   'pages.search.label.barcodeIndex': 'Cell Barcode',
-  'pages.search.label.cellCount': 'Search for cell count:',
-  'pages.search.label.nickname': 'Job name(Optional):',
+  'pages.search.label.cellCount': 'Search for cell count',
+  'pages.search.label.nickname': 'Job name(Optional)',
   'pages.search.label.nickname.tip':
     'An optional, short (<32 characters) description of the run for your reference',
   'pages.search.submitBtn': 'Submit',
@@ -22,7 +22,7 @@ export default {
 
   'pages.result.jobId': 'Job Id',
   'pages.result.jobName': 'Job Name',
-  'pages.result.cellEmbedding': 'Cell Embedding',
+  'pages.result.cellEmbedding': 'Embedding',
   'pages.result.cellCount': 'Cell Count',
   'pages.result.time': 'Submit Time',
   'pages.result.waiting': 'Waiting',

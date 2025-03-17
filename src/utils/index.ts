@@ -25,6 +25,7 @@ export function transformOptions(data: any) {
 export type taskType = {
   jobId: number;
   jobName: string;
+  model: string;
   cellCount: number;
   status: number;
   gmtCreate: string;

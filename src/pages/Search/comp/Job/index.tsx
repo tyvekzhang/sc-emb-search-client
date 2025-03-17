@@ -98,7 +98,13 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
   };
 
   useEffect(() => {
-    handleSelectReference("", { value: species })
+    if (species === undefined) {
+      setSpecies("1")
+      handleSelectReference("", { value: "1" })
+    } else {
+      handleSelectReference("", { value: species })
+    }
+
   }, [activeTab]);
 
   const handleSelectSample = async (value: any, option: any) => {
@@ -198,9 +204,13 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
         const cellCount = res;
         const gmtCreate = dayjs().format('YYYY-MM-DD HH:mm:ss');
         setFileName("")
-
+        let model = "Scimilarity"
+        if (values.model === "2") {
+          model = "Geneformer"
+        }
         setJobTask({
           jobId,
+          model: model,
           jobName: values.jobName || fileName,
           status: 2,
           cellCount,
@@ -296,7 +306,7 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
                 onChange={handleSelectReference}
                 options={[
                   { value: '1', label: 'Homo sapiens' },
-                  { value: '2', label: 'Mouse', disabled: true },
+                  { value: '2', label: 'Mouse' },
                 ]}
                 filterOption={filterOperate as any}
             />

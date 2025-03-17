@@ -9,20 +9,17 @@ export default function useCellEmbResultTable() {
     {
       title: intl.formatMessage({ id: 'component.result.rank' }),
       key: 'index',
-      width: '5%',
-      fixed: 'left',
-      render: (text: string, record: CellEmbResult, idx: number) => idx + 1,
+      align: 'left',
+      render: (text: string, record: CellEmbResult, idx: number) => <span className={"p-4"}>{idx + 1}</span>,
     },
     {
       title: intl.formatMessage({ id: 'component.result.study' }),
       dataIndex: 'study',
-      width: '12%',
       ellipsis: true,
     },
     {
       title: intl.formatMessage({ id: 'component.result.sample' }),
       dataIndex: 'sample',
-      width: '15%',
       ellipsis: true,
       render: (text: string, record: CellEmbResult) => {
         if (text) {
@@ -31,7 +28,6 @@ export default function useCellEmbResultTable() {
           if (text.includes('-')) {
             processedText = text.split('-')[1];
           }
-          // 对 processedText 进行编码
           const encodedText = encodeURIComponent(processedText);
           return (
             <a
@@ -50,31 +46,28 @@ export default function useCellEmbResultTable() {
     {
       title: intl.formatMessage({ id: 'component.result.prediction' }),
       dataIndex: 'prediction',
-      width: '15%',
       ellipsis: true,
     },
     {
       title: intl.formatMessage({ id: 'component.result.tissue' }),
       dataIndex: 'tissue',
-      width: '8%',
       ellipsis: true,
     },
     {
       title: intl.formatMessage({ id: 'component.result.cell_line' }),
       dataIndex: 'cell_line',
-      width: '8%',
       render: (text: boolean, record: CellEmbResult) => {
         if (text) {
-          return intl.formatMessage({ id: 'component.result.yes' });
+          return <span className={"p-6"}>{intl.formatMessage({ id: 'component.result.yes' })}</span>;
         } else {
-          return intl.formatMessage({ id: 'component.result.no' });
+          return <span className={"p-6"}>{intl.formatMessage({ id: 'component.result.no' })}</span>;
         }
       },
+      ellipsis: true,
     },
     {
       title: intl.formatMessage({ id: 'component.result.disease' }),
       dataIndex: 'disease',
-      width: '8%',
       ellipsis: true,
     },
   ];

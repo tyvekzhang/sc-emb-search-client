@@ -1,14 +1,14 @@
 import ResultTable, { resultDataType } from '@/components/ResultTable';
+import { prefix } from '@/config';
+import { fetchJobDetail } from '@/service/job';
 import { queryJobResult } from '@/service/result';
 import { clone, delIndexTask, getJobTask, TASK_KEY, taskType } from '@/utils';
-import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import { GridContent } from '@ant-design/pro-layout';
 import { useIntl } from '@umijs/max';
 import { Card, message, Modal, Popconfirm, Space, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import React, { useEffect, useState } from 'react';
-import { fetchJobDetail } from '@/service/job';
-import {prefix} from "@/config";
 
 enum statusType {
   waiting = 1,
@@ -42,7 +42,9 @@ const Result: React.FC<{ aKey: string }> = (props) => {
         const _tasks = getJobTask();
         if (_tasks) {
           // 筛选状态不为 3 的任务
-          const filteredTasks = _tasks.filter((task) => task.status < statusType.completed);
+          const filteredTasks = _tasks.filter(
+            (task) => task.status < statusType.completed,
+          );
 
           // 遍历筛选出的任务，调用 getDetail 接口
           for (const task of filteredTasks) {
@@ -84,12 +86,12 @@ const Result: React.FC<{ aKey: string }> = (props) => {
         Modal.warning({
           title: intl.formatMessage({ id: 'pages.form.job.wait' }),
           content: (
-              <div>
-                {intl.formatMessage(
-                    { id: 'pages.form.job.wait.tip' },
-                    { id: <b>{jobId}</b> },
-                )}
-              </div>
+            <div>
+              {intl.formatMessage(
+                { id: 'pages.form.job.wait.tip' },
+                { id: <b>{jobId}</b> },
+              )}
+            </div>
           ),
           maskClosable: true,
         });
@@ -97,12 +99,12 @@ const Result: React.FC<{ aKey: string }> = (props) => {
         Modal.warning({
           title: intl.formatMessage({ id: 'pages.form.job.exec' }),
           content: (
-              <div>
-                {intl.formatMessage(
-                    { id: 'pages.form.job.exec.tip' },
-                    { id: <b>{jobId}</b> },
-                )}
-              </div>
+            <div>
+              {intl.formatMessage(
+                { id: 'pages.form.job.exec.tip' },
+                { id: <b>{jobId}</b> },
+              )}
+            </div>
           ),
           maskClosable: true,
         });
@@ -130,89 +132,114 @@ const Result: React.FC<{ aKey: string }> = (props) => {
     {
       title: intl.formatMessage({ id: 'pages.result.jobId' }),
       dataIndex: 'jobId',
+      width: "140px"
     },
     {
       title: intl.formatMessage({ id: 'pages.result.jobName' }),
       dataIndex: 'jobName',
+      ellipsis: true,
+      width: "180px"
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.search.reference.model' }),
+      dataIndex: 'model',
+      width: "100px"
     },
     {
       title: intl.formatMessage({ id: 'pages.result.time' }),
       dataIndex: 'gmtCreate',
+      width: "180px"
     },
     {
       title: intl.formatMessage({ id: 'pages.result.status' }),
       dataIndex: 'status',
+      width: "120px",
       render: (text, record) => {
         if (text === 1) {
-          return <Tag className={"p-1"} bordered={false} color="yellow">{intl.formatMessage({ id: 'pages.result.waiting' })}</Tag>;
+          return (
+            <Tag className={'p-1'} bordered={false} color="yellow">
+              {intl.formatMessage({ id: 'pages.result.waiting' })}
+            </Tag>
+          );
         } else if (text === 2) {
-          return <Tag className={"p-1"} bordered={false} color="processing">{intl.formatMessage({ id: 'pages.result.executing' })}</Tag>;
+          return (
+            <Tag className={'p-1'} bordered={false} color="processing">
+              {intl.formatMessage({ id: 'pages.result.executing' })}
+            </Tag>
+          );
         } else if (text === 3) {
-          return <Tag className={"p-1"} bordered={false} color="success">{intl.formatMessage({ id: 'pages.result.completed' })}</Tag>;
+          return (
+            <Tag className={'p-1'} bordered={false} color="success">
+              {intl.formatMessage({ id: 'pages.result.completed' })}
+            </Tag>
+          );
         } else {
-          return <Tag className={"p-1"} bordered={false} color="error">{intl.formatMessage({ id: 'pages.result.error' })}</Tag>;
-        }
-      },
-    },
-    {
-      title: intl.formatMessage({ id: 'pages.result.cellEmbedding' }),
-      dataIndex: 'cellEmbedding',
-      render: (text, record) => {
-        if (record.status === 3) {
-          return <a className={"text-blue-500"} href={`${prefix}/v1/job/export_result?job_id=${record.jobId}&emb=true`}>{intl.formatMessage({ id: 'component.result.download' })}</a>;
-        } else {
-          return <a className={"text-blue-500 cursor-not-allowed"}>{intl.formatMessage({ id: 'component.result.generating' })}</a>;
+          return (
+            <Tag className={'p-1'} bordered={false} color="error">
+              {intl.formatMessage({ id: 'pages.result.error' })}
+            </Tag>
+          );
         }
       },
     },
     {
       title: intl.formatMessage({ id: 'pages.result.operate' }),
       render: (_, record, idx) => (
-          <Space >
-            <button
-                className="btn-operation"
-                onClick={(e) => handleQueryResult(e, record)}
-                disabled={record.status!== statusType.completed} // 禁用状态控制
-            >
-              <EyeOutlined className="w-3 h-3" />
-              <span className="ml-1">
-              {intl.formatMessage({ id: 'pages.result.btn' })}
+        <Space size={'small'} className="text-[12px] flex flex-row">
+          <button
+            className="btn-operation"
+            onClick={(e) => handleQueryResult(e, record)}
+            disabled={record.status !== statusType.completed} // 禁用状态控制
+          >
+            <EyeOutlined className="w-3 h-3" />
+            <span className="ml-1">
+              {intl.formatMessage({ id: 'pages.dataset.details' })}
             </span>
-            </button>
-            <Popconfirm
-                title={intl.formatMessage({ id: 'pages.result.del.tip' })}
-                onConfirm={() => handleDelete(idx)}
-            >
-              <button className="block btn-remove">
-                <DeleteOutlined className="w-3 h-3" />
-                <span className="ml-1">
+          </button>
+          <button
+            className="btn-operation"
+            onClick={() => window.location.href=`${prefix}/v1/job/export_result?job_id=${record.jobId}&emb=true`}
+            disabled={record.status !== statusType.completed} // 禁用状态控制
+          >
+            <DownloadOutlined className="w-3 h-3" />
+            <span className="ml-1">
+              {intl.formatMessage({ id: 'pages.result.cellEmbedding' })}
+            </span>
+          </button>
+          <Popconfirm
+            title={intl.formatMessage({ id: 'pages.result.del.tip' })}
+            onConfirm={() => handleDelete(idx)}
+          >
+            <button className="block btn-remove">
+              <DeleteOutlined className="w-3 h-3" />
+              <span className="ml-1">
                 {intl.formatMessage({ id: 'pages.result.del' })}
               </span>
-              </button>
-            </Popconfirm>
-          </Space>
+            </button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
 
   return (
-      <GridContent>
-        <Card bordered={false}>
-          <Table
-              size="middle"
-              columns={columns}
-              scroll={{ y: 'calc(100vh - 296px)' }}
-              rowKey="jobId"
-              dataSource={tasks}
-              pagination={false}
-          />
-          <ResultTable
-              visible={visible}
-              setVisible={setVisible}
-              {...resultData}
-          />
-        </Card>
-      </GridContent>
+    <GridContent>
+      <Card bordered={false}>
+        <Table
+          size="middle"
+          columns={columns}
+          scroll={{ y: 'calc(100vh - 296px)' }}
+          rowKey="jobId"
+          dataSource={tasks}
+          pagination={false}
+        />
+        <ResultTable
+          visible={visible}
+          setVisible={setVisible}
+          {...resultData}
+        />
+      </Card>
+    </GridContent>
   );
 };
 
