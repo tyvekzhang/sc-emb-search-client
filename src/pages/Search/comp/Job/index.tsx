@@ -3,13 +3,13 @@ import { GridContent } from '@ant-design/pro-layout';
 import { useIntl } from '@umijs/max';
 import {
   Button,
-  Card,
+  Card, Col,
   Divider,
   Form,
-  Input,
+  Input, InputNumber, InputNumberProps,
   message,
   Modal,
-  Radio,
+  Radio, Row,
   Select,
   Slider,
   Tabs,
@@ -253,9 +253,6 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
     setActiveTab(key);
   };
 
-  const handleSliderChange = (value: number) => {
-    form.setFieldsValue({ cellCount: value });
-  };
 
   const indexOptions: CheckboxGroupProps<string>['options'] = [
     { label: texts.cellIndex , value: '1' },
@@ -266,6 +263,14 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
     { label: "Scimilarity" , value: '1' },
     { label: "Geneformer", value: '2' },
   ];
+  const [inputValue, setInputValue] = useState(1000);
+  const handleSliderChange: InputNumberProps['onChange'] = (value) => {
+    if (Number.isNaN(value)) {
+      return;
+    }
+    setInputValue(value as number);
+    form.setFieldsValue({ cellCount: value as number });
+  };
 
   const [indexType, setIndexType] = useState('1');
   const [modelName, setModelName] = useState('1');
@@ -380,12 +385,27 @@ const Task: React.FC<TaskProps> = ({ setKey }) => {
             name="cellCount"
             rules={[{ required: true, message: texts.require }]}
           >
-            <Slider
-              defaultValue={1000}
-              max={10000}
-              step={1000}
-              onChange={handleSliderChange}
-            />
+            <Row>
+              <Col span={20}>
+                <Slider
+                  defaultValue={1000}
+                  max={10000}
+                  step={1000}
+                  onChange={handleSliderChange}
+                  value={typeof inputValue === 'number' ? inputValue : 1000}
+                />
+              </Col>
+              <Col span={2}>
+                <InputNumber
+                  min={1000}
+                  max={10000}
+                  step={1000}
+                  className={"ml-6"}
+                  value={inputValue}
+                  onChange={handleSliderChange}
+                />
+              </Col>
+            </Row>
           </Form.Item>
           <Radio.Group
               options={indexOptions}
